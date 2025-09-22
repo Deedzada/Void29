@@ -214,7 +214,7 @@ closeBtn.onclick = ()=>{
     // Roadmap + materiais (Documentação, Tutoriais, Labs) por etapa.
     // Cada stage agora é um objecto com title e links (docs, tutorials, labs).
     const ROADMAP = [
-      {id:'net', title:'Redes & Protocolos', pct:20, stages:[
+      {id:'net', title:'Redes & Protocolos', pct:10, stages:[
         {title:'Conceitos TCP/IP e UDP', links:{
           docs:[
             {name:'RFC 791 — IP (resumo)', url:'https://datatracker.ietf.org/doc/html/rfc791'},
@@ -282,7 +282,7 @@ closeBtn.onclick = ()=>{
           ]
         }}
       ]},
-      {id:'linux', title:'Linux & Administração', pct:18, stages:[
+      {id:'linux', title:'Linux & Administração', pct:10, stages:[
         {title:'Comandos básicos e filesystem', links:{
           docs:[
             {name:'Linux Command Manual (tldr)', url:'https://tldr.sh/'},
@@ -349,7 +349,7 @@ closeBtn.onclick = ()=>{
           ]
         }}
       ]},
-      {id:'prog', title:'Programação & Scripting', pct:18, stages:[
+      {id:'prog', title:'Programação & Scripting', pct:10, stages:[
         {title:'Python: sintaxe e scripts', links:{
           docs:[
             {name:'Python official docs', url:'https://docs.python.org/3/'},
@@ -478,7 +478,7 @@ closeBtn.onclick = ()=>{
           ]
         }}
       ]},
-      {id:'crypto', title:'Cripto & Protocolos', pct:6, stages:[
+      {id:'crypto', title:'Cripto & Protocolos', pct:10, stages:[
         {title:'Hashes e integridade', links:{
           docs:[
             {name:'RFC 2104 (HMAC)', url:'https://datatracker.ietf.org/doc/html/rfc2104'},
@@ -536,7 +536,7 @@ closeBtn.onclick = ()=>{
           ]
         }}
       ]},
-      {id:'exploit', title:'Exploitation & Memory', pct:8, stages:[
+      {id:'exploit', title:'Exploitation & Memory', pct:10, stages:[
         {title:'Buffer overflow básico', links:{
           docs:[
             {name:'Smashing The Stack for Fun and Profit (classic)', url:'https://inst.eecs.berkeley.edu/~cs161/fa17/resources/smashstack.pdf'},
@@ -654,7 +654,7 @@ closeBtn.onclick = ()=>{
           ]
         }}
       ]},
-      {id:'pentest', title:'Pentest Metodologia', pct:5, stages:[
+      {id:'pentest', title:'Pentest Metodologia', pct:10, stages:[
         {title:'Reconhecimento e OSINT', links:{
           docs:[
             {name:'OSINT Framework', url:'https://osintframework.com/'}
@@ -711,7 +711,7 @@ closeBtn.onclick = ()=>{
           ]
         }}
       ]},
-      {id:'opsec', title:'OpSec & Social Eng', pct:4, stages:[
+      {id:'opsec', title:'OpSec & Social Eng', pct:10, stages:[
         {title:'Princípios de OpSec', links:{
           docs:[
             {name:'Operational Security guidance', url:'https://en.wikipedia.org/wiki/Operational_security'}
@@ -768,7 +768,7 @@ closeBtn.onclick = ()=>{
           ]
         }}
       ]},
-      {id:'cloud', title:'Cloud & Infra', pct:1, stages:[
+      {id:'cloud', title:'Cloud & Infra', pct:10, stages:[
         {title:'Conceitos AWS/GCP/Azure', links:{
           docs:[
             {name:'AWS docs (fundamentals)', url:'https://docs.aws.amazon.com/'},
@@ -1026,4 +1026,3 @@ function renderAll(){
 
 renderAll();
 </script>
-
