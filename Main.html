@@ -1,0 +1,1028 @@
+<!doctype html>
+<html lang="pt-AO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="favicon3.jpg" type="image/jpg">
+<title>VOID29 — BASIC HACKING COURSE</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d111f; --card:#161b2b; --muted:#a0aec0; --accent:#4f86f7; 
+  --success:#10b981; --danger:#ef4444; --radius:12px; --max-width:1200px;
+  --navbar-height:64px;
+}
+
+/* Reset + font */
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif;}
+body{background:var(--bg);color:#e6eef8;min-height:100vh;padding-top:var(--navbar-height);}
+button{cursor:pointer;font-family:inherit;border:none;}
+
+/* Wrapper layout */
+.wrap{max-width:var(--max-width);margin:0 auto;padding:18px;display:flex;flex-direction:column;gap:18px;}
+
+/* ================== NAVBAR ================== */
+.navbar{
+  position:fixed;top:0;left:0;width:100%;height:var(--navbar-height);
+  background:var(--card);display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;box-shadow:0 4px 20px rgba(0,0,0,0.7);z-index:999;
+  transition:background 0.3s;
+}
+.navbar .logo{font-weight:800;font-size:20px;color: #fff;}
+.navbar .progress-bar{display:flex;align-items:center;gap:12px;}
+.progress-big{height:10px;background:rgba(255,255,255,0.08);border-radius:999px;width:220px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--accent);width:0%;transition:width 400ms;}
+.navbar .menu-btn{font-size:28px;color:var(--muted);background:none;transition:transform 0.3s;}
+.navbar .menu-btn:hover{transform:scale(1.2);}
+
+/* ================== LAYOUT ================== */
+.layout{display:grid;grid-template-columns:280px 1fr;gap:18px;margin-top:0;padding-top:18px;}
+@media(max-width:900px){.layout{grid-template-columns:1fr;}}
+
+/* ================== PANEL / MENU ================== */
+.panel{background:var(--card);padding:14px;border-radius:var(--radius);box-shadow:0 6px 24px rgba(0,0,0,0.5);}
+nav{display:flex;flex-direction:column;gap:10px;margin-top:10px;}
+.menu-item{padding:10px;border-radius:10px;display:flex;gap:8px;align-items:center;cursor:pointer;border:1px solid rgba(255,255,255,0.05);transition:all 0.2s;}
+.menu-item:hover{transform:translateY(-2px);background:rgba(255,255,255,0.05);}
+.menu-item.locked{opacity:0.45;cursor:not-allowed;}
+.menu-item.selected{outline:2px solid rgba(79,134,247,0.25);}
+.menu-item .num{width:30px;height:30px;border-radius:6px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-weight:700;}
+.menu-item h4{font-size:14px;margin:0;}
+.menu-item p{font-size:12px;color:var(--muted);margin:0;}
+
+/* ================== MAIN ================== */
+main{display:flex;flex-direction:column;gap:14px;}
+.hero{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;}
+.hero h2{font-size:22px;font-weight:700;}
+.hero .meta{color:var(--muted);font-size:13px;}
+.steps{display:flex;flex-direction:column;gap:12px;}
+.stage{padding:12px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);display:flex;flex-direction:column;transition:all 0.2s;}
+.stage:hover{transform:translateY(-2px);}
+.stage.locked{opacity:0.45;cursor:not-allowed;}
+.stage.done{background:var(--success);color:#021124;box-shadow:0 6px 20px rgba(16,185,129,0.3);}
+.stage h4{font-weight:600;font-size:15px;margin-bottom:6px;}
+.links{display:flex;flex-wrap:wrap;gap:8px;}
+.link-btn{padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.05);background:rgba(255,255,255,0.03);color:var(--muted);text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px;}
+.link-btn:hover{background:rgba(79,134,247,0.3);color:#e6eef8;border-color:transparent;}
+.btn{padding:8px 12px;border-radius:8px;border:0;background:#1f2937;color:#e6eef8;font-weight:600;transition:all 0.2s;}
+.btn:hover{background:#374151;transform:translateY(-1px);}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.08);color:var(--muted);}
+
+/* ================== POPUP MENU ================== */
+#popupMenu{
+  position:fixed;top:var(--navbar-height);right:0;width:280px;background:var(--card);height:calc(100% - var(--navbar-height));
+  box-shadow:-4px 0 24px rgba(0,0,0,0.8);padding:18px;transform:translateX(100%);
+  transition:transform 0.4s cubic-bezier(0.68,-0.55,0.265,1.55);z-index:998;display:flex;flex-direction:column;gap:12px;
+}
+#popupMenu.active{transform:translateX(0);}
+#popupMenu h3{font-size:16px;margin-bottom:6px;}
+#popupMenu button{width:100%;margin-top:4px;}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR FIXA -->
+<div class="navbar">
+  <div class="logo">VOID29</div>
+  <div class="progress-bar">
+    <div id="overallPercent" style="font-weight:700;">0%</div>
+    <div class="progress-big"><div id="overallFill" class="progress-fill"></div></div>
+  </div>
+  <button class="menu-btn" id="hamburger" style="color: #fff;">&#9776;</button>
+</div>
+
+<div class="layout wrap">
+
+  <!-- MENU SEÇÕES -->
+  <aside class="panel">
+    <h3>Seções & Ordem</h3>
+    <nav id="menu"></nav>
+    <div style="margin-top:12px;color:var(--muted);font-size:13px">
+      Completa todas as etapas de uma secção para desbloquear a seguinte.
+    </div>
+  </aside>
+
+  <!-- MAIN STEPS -->
+  <main id="mainPanel">
+    <div class="hero">
+      <div>
+        <h2 id="mainTitle">Carrega numa secção</h2>
+        <div class="meta" id="mainMeta">Segue as etapas obrigatórias — avança apenas quando cada etapa estiver 100% concluída.</div>
+      </div>
+    </div>
+    <div id="stepsArea" class="steps"></div>
+  </main>
+
+</div>
+
+<!-- POPUP MENU (Reset + Ferramentas) -->
+<div id="popupMenu" style="
+  position:fixed;
+  top:60px;
+  right:20px;
+  width:320px;
+  max-height:95vh; /* Aumentei cerca de 15px proporcionalmente */
+  background:var(--card);
+  border-radius:12px;
+  box-shadow:0 12px 40px rgba(0,0,0,0.5);
+  padding:18px;
+  display:none;
+  flex-direction:column;
+  gap:16px;
+  overflow-y:auto;
+  z-index:1000;
+  transition:transform 0.3s ease, opacity 0.3s ease;
+  transform:translateX(100%);
+  opacity:0;
+">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+    <h3 style="margin:0;font-size:18px;color:#e6eef8;">Menu</h3>
+    <button id="closePopup" style="background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;">&times;</button>
+  </div>
+
+  <!-- Reset Progress -->
+  <div>
+    <button id="resetBtn" style="
+      width:100%;
+      padding:10px;
+      border-radius:10px;
+      background:var(--danger);
+      color:#fff;
+      font-weight:700;
+      font-size:14px;
+      transition:all 0.2s;
+      cursor:pointer;
+    " onmouseover="this.style.background='#f87171'" onmouseout="this.style.background='var(--danger)'">
+      Resetar Progresso
+    </button>
+  </div>
+
+  <!-- Ferramentas Essenciais -->
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div>
+      <h4 style="margin-bottom:4px;color:#e6eef8;">Virtualização</h4>
+      <ul style="margin:0 0 4px 18px;color:var(--muted);font-size:13px"><li>VMware / VirtualBox</li></ul>
+    </div>
+
+    <div>
+      <h4 style="margin-bottom:4px;color:#e6eef8;">Sistemas Operativos</h4>
+      <ul style="margin:0 0 4px 18px;color:var(--muted);font-size:13px">
+        <li>Kali Linux / Parrot OS / Ubuntu Server / Windows Server</li>
+      </ul>
+    </div>
+
+    <div>
+      <h4 style="margin-bottom:4px;color:#e6eef8;">Rede & Web</h4>
+      <ul style="margin:0 0 4px 18px;color:var(--muted);font-size:13px">
+        <li>nmap, Burp Suite, Wireshark</li>
+      </ul>
+    </div>
+
+    <div>
+      <h4 style="margin-bottom:4px;color:#e6eef8;">Debug & Exploitation</h4>
+      <ul style="margin:0 0 4px 18px;color:var(--muted);font-size:13px">
+        <li>GDB, pwndbg, pwntools</li>
+      </ul>
+    </div>
+
+    <div>
+      <h4 style="margin-bottom:4px;color:#e6eef8;">Reverse Engineering</h4>
+      <ul style="margin:0 0 4px 18px;color:var(--muted);font-size:13px">
+        <li>Ghidra</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+// ================== POPUP MENU ==================
+const popup = document.getElementById('popupMenu');
+const hamburgerBtn = document.getElementById('hamburger');
+const closeBtn = document.getElementById('closePopup');
+
+hamburgerBtn.onclick = ()=>{
+  popup.style.display = 'flex';
+  setTimeout(()=>{ popup.style.transform='translateX(0)'; popup.style.opacity='1'; }, 10);
+};
+closeBtn.onclick = ()=>{
+  popup.style.transform='translateX(100%)';
+  popup.style.opacity='0';
+  setTimeout(()=>{ popup.style.display='none'; }, 300);
+};
+// Aqui podes adicionar o JS de roadmap, renderMenu, showSection, renderGlobalProgress etc.
+
+    // Roadmap + materiais (Documentação, Tutoriais, Labs) por etapa.
+    // Cada stage agora é um objecto com title e links (docs, tutorials, labs).
+    const ROADMAP = [
+      {id:'net', title:'Redes & Protocolos', pct:20, stages:[
+        {title:'Conceitos TCP/IP e UDP', links:{
+          docs:[
+            {name:'RFC 791 — IP (resumo)', url:'https://datatracker.ietf.org/doc/html/rfc791'},
+            {name:'TCP/IP Illustrated (capítulos)', url:'https://www.amazon.com/TCP-IP-Illustrated-Addison-Wesley-Professional/dp/0201633469'}
+          ],
+          tutorials:[
+            {name:'Professor Messer — TCP/IP (YT)', url:'https://www.youtube.com/results?search_query=professor+messer+tcp+ip'},
+            {name:'Network Fundamentals (free course)', url:'https://www.freecodecamp.org/news/networking-for-beginners/'}
+          ],
+          labs:[
+            {name:'TryHackMe — Intro to Networking', url:'https://tryhackme.com/room/introtonetworks'},
+            {name:'Wireshark labs (hands-on)', url:'https://www.wireshark.org/docs/'}
+          ]
+        }},
+        {title:'Subnetting e routing', links:{
+          docs:[
+            {name:'Subnetting guide', url:'https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13788-3.html'},
+            {name:'RFC 1812 (routing basics)', url:'https://datatracker.ietf.org/doc/html/rfc1812'}
+          ],
+          tutorials:[
+            {name:'Subnetting explained (YouTube)', url:'https://www.youtube.com/watch?v=Q3k7hxd4ul4'},
+            {name:'Free subnetting practice', url:'https://www.subnetonline.com/'}
+          ],
+          labs:[
+            {name:'TryHackMe — Networking Learning Path', url:'https://tryhackme.com/learn/paths/91'}
+          ]
+        }},
+        {title:'HTTP/HTTPS e TLS basics', links:{
+          docs:[
+            {name:'RFC 7231 — HTTP/1.1', url:'https://datatracker.ietf.org/doc/html/rfc7231'},
+            {name:'RFC 5246 — TLS 1.2', url:'https://datatracker.ietf.org/doc/html/rfc5246'}
+          ],
+          tutorials:[
+            {name:'MDN — HTTP overview', url:'https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Overview'},
+            {name:'TLS explained (Lecture)', url:'https://www.youtube.com/watch?v=SJJmoDZ3il8'}
+          ],
+          labs:[
+            {name:'Prática: intercept HTTPS (Burp + TLS)', url:'https://portswigger.net/web-security/ssl-tls'}
+          ]
+        }},
+        {title:'ARP, NAT e DHCP', links:{
+          docs:[
+            {name:'ARP (overview)', url:'https://en.wikipedia.org/wiki/Address_Resolution_Protocol'},
+            {name:'DHCP RFC 2131', url:'https://datatracker.ietf.org/doc/html/rfc2131'}
+          ],
+          tutorials:[
+            {name:'ARP & ARP spoofing (video)', url:'https://www.youtube.com/watch?v=3K8c7HU1RtU'},
+            {name:'NAT explained', url:'https://www.youtube.com/watch?v=YhYqZ0tHjgQ'}
+          ],
+          labs:[
+            {name:'Wireshark ARP lab', url:'https://www.wireshark.org/docs/wsug_html_chunked/ChCapAnalysis.html'}
+          ]
+        }},
+        {title:'Captura e análise com Wireshark', links:{
+          docs:[
+            {name:'Wireshark User Guide', url:'https://www.wireshark.org/docs/wsug_html_chunked/'}
+          ],
+          tutorials:[
+            {name:'Wireshark for beginners (YouTube)', url:'https://www.youtube.com/watch?v=TkCSr30UojM'},
+            {name:'Practical packet analysis (book)', url:'https://nostarch.com/packetanalysis2e'}
+          ],
+          labs:[
+            {name:'TryHackMe — Traffic Analysis', url:'https://tryhackme.com/room/trafficanalysis'},
+            {name:'Wireshark sample captures', url:'https://wiki.wireshark.org/SampleCaptures'}
+          ]
+        }}
+      ]},
+      {id:'linux', title:'Linux & Administração', pct:18, stages:[
+        {title:'Comandos básicos e filesystem', links:{
+          docs:[
+            {name:'Linux Command Manual (tldr)', url:'https://tldr.sh/'},
+            {name:'GNU Coreutils docs', url:'https://www.gnu.org/software/coreutils/manual/'}
+          ],
+          tutorials:[
+            {name:'Linux Basics (freeCodeCamp YT)', url:'https://www.youtube.com/watch?v=ivv6F3aS0P0'},
+            {name:'Linux Journey', url:'https://linuxjourney.com/'}
+          ],
+          labs:[
+            {name:'TryHackMe — Linux Fundamentals', url:'https://tryhackme.com/room/linuxfundamentals'},
+            {name:'OverTheWire — Bandit', url:'https://overthewire.org/wargames/bandit/'}
+          ]
+        }},
+        {title:'Permissões, users e sudo', links:{
+          docs:[
+            {name:'chmod/chown man pages', url:'https://man7.org/linux/man-pages/man1/chmod.1.html'},
+            {name:'sudo manual', url:'https://www.sudo.ws/man/1.8.31/'}
+          ],
+          tutorials:[
+            {name:'Linux permissions explained', url:'https://www.youtube.com/watch?v=7Y3Ab3gkz3s'},
+            {name:'Users and groups (tutorial)', url:'https://linuxize.com/post/linux-users-and-groups/'}
+          ],
+          labs:[
+            {name:'TryHackMe — PrivEsc (Linux)', url:'https://tryhackme.com/room/privlegeescalation'},
+            {name:'GTFOBins (practical)', url:'https://gtfobins.github.io/'}
+          ]
+        }},
+        {title:'systemd, cron e logs', links:{
+          docs:[
+            {name:'systemd for administrators', url:'https://www.freedesktop.org/wiki/Software/systemd/'},
+            {name:'cron man page', url:'https://man7.org/linux/man-pages/man8/cron.8.html'}
+          ],
+          tutorials:[
+            {name:'systemd basics (video)', url:'https://www.youtube.com/watch?v=F9Y3ENc3qGg'},
+            {name:'Managing cron jobs', url:'https://www.digitalocean.com/community/tutorials/how-to-use-cron-to-automate-tasks-on-centos-7'}
+          ],
+          labs:[
+            {name:'Audit logs & log analysis (lab)', url:'https://tryhackme.com/room/loganalysis'}
+          ]
+        }},
+        {title:'Networking e SSH', links:{
+          docs:[
+            {name:'OpenSSH manual', url:'https://www.openssh.com/manual.html'},
+            {name:'sshd_config options', url:'https://man.openbsd.org/sshd_config'}
+          ],
+          tutorials:[
+            {name:'Secure SSH usage', url:'https://www.youtube.com/watch?v=3QnD2c4Xovk'},
+            {name:'SSH hardening guide', url:'https://www.ssh.com/academy/ssh/hardening'}
+          ],
+          labs:[
+            {name:'SSH exploitation labs', url:'https://tryhackme.com/room/sshbreakin'}
+          ]
+        }},
+        {title:'Escalada de privilégios básica', links:{
+          docs:[
+            {name:'Linux privilege escalation summary', url:'https://book.hacktricks.xyz/linux-unix/privilege-escalation'}
+          ],
+          tutorials:[
+            {name:'Linux PrivEsc (video series)', url:'https://www.youtube.com/results?search_query=linux+privilege+escalation+tutorial'},
+          ],
+          labs:[
+            {name:'TryHackMe — Linux PrivEsc', url:'https://tryhackme.com/room/linuxprivilegeescalation'}
+          ]
+        }}
+      ]},
+      {id:'prog', title:'Programação & Scripting', pct:18, stages:[
+        {title:'Python: sintaxe e scripts', links:{
+          docs:[
+            {name:'Python official docs', url:'https://docs.python.org/3/'},
+            {name:'PEP 8 (style guide)', url:'https://peps.python.org/pep-0008/'}
+          ],
+          tutorials:[
+            {name:'Automate the Boring Stuff (free book)', url:'https://automatetheboringstuff.com/'},
+            {name:'Python for Security (tutorials)', url:'https://www.youtube.com/results?search_query=python+for+security'}
+          ],
+          labs:[
+            {name:'Write simple scanners (practical)', url:'https://tryhackme.com/room/pythonforsecurity'}
+          ]
+        }},
+        {title:'Automatização com Python', links:{
+          docs:[
+            {name:'Requests library', url:'https://docs.python-requests.org/'},
+            {name:'Paramiko (SSH in Python)', url:'http://docs.paramiko.org/'}
+          ],
+          tutorials:[
+            {name:'Building automation scripts (YT)', url:'https://www.youtube.com/results?search_query=python+automation+tutorial'},
+          ],
+          labs:[
+            {name:'Automate recon tasks (lab)', url:'https://tryhackme.com/room/pythonautomation'}
+          ]
+        }},
+        {title:'C: pointers e memoria', links:{
+          docs:[
+            {name:'The C Programming Language (K&R)', url:'https://archive.org/details/TheCProgrammingLanguage2ndEditionByKernighanRitchie'},
+            {name:'C reference', url:'https://en.cppreference.com/w/c'}
+          ],
+          tutorials:[
+            {name:'C pointers explained', url:'https://www.youtube.com/watch?v=zuegQmMdy8M'},
+            {name:'Memory management in C', url:'https://www.geeksforgeeks.org/memory-management-c/'}
+          ],
+          labs:[
+            {name:'Exploit-exercises (basic C)', url:'https://exploit-exercises.com/'}
+          ]
+        }},
+        {title:'JavaScript e XSS basics', links:{
+          docs:[
+            {name:'MDN JS docs', url:'https://developer.mozilla.org/pt-BR/docs/Web/JavaScript'},
+            {name:'Same-origin policy (doc)', url:'https://developer.mozilla.org/pt-BR/docs/Web/Security/Same-origin_policy'}
+          ],
+          tutorials:[
+            {name:'JavaScript basics (freeCodeCamp)', url:'https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/'},
+            {name:'XSS explained (video)', url:'https://www.youtube.com/watch?v=3zQ3q2Q0VnU'}
+          ],
+          labs:[
+            {name:'OWASP Juice Shop (XSS practice)', url:'https://owasp.org/www-project-juice-shop/'}
+          ]
+        }},
+        {title:'Bash/PowerShell para ops', links:{
+          docs:[
+            {name:'Bash reference', url:'https://www.gnu.org/software/bash/manual/'},
+            {name:'PowerShell docs', url:'https://learn.microsoft.com/powershell/'}
+          ],
+          tutorials:[
+            {name:'Bash scripting tutorial', url:'https://ryanstutorials.net/bash-scripting-tutorial/'},
+            {name:'PowerShell for pentesters (YT)', url:'https://www.youtube.com/results?search_query=powershell+for+pentesters'}
+          ],
+          labs:[
+            {name:'PowerShell labs (Practical)', url:'https://tryhackme.com/room/introtocollectionpowershell'}
+          ]
+        }}
+      ]},
+      {id:'web', title:'Segurança Web', pct:14, stages:[
+        {title:'OWASP Top10 overview', links:{
+          docs:[
+            {name:'OWASP Top 10 (official)', url:'https://owasp.org/www-project-top-ten/'},
+            {name:'OWASP Cheat Sheet Series', url:'https://cheatsheetseries.owasp.org/'}
+          ],
+          tutorials:[
+            {name:'OWASP Top 10 explained (video)', url:'https://www.youtube.com/watch?v=3N7Tq5h5cQc'},
+          ],
+          labs:[
+            {name:'PortSwigger Web Security Academy', url:'https://portswigger.net/web-security'},
+            {name:'TryHackMe — Web Fundamentals', url:'https://tryhackme.com/room/webfundamentals'}
+          ]
+        }},
+        {title:'XSS e SQLi exploração', links:{
+          docs:[
+            {name:'XSS (MDN)', url:'https://developer.mozilla.org/pt-BR/docs/Glossary/Cross-site_scripting'},
+            {name:'SQL Injection (OWASP)', url:'https://owasp.org/www-community/attacks/SQL_Injection'}
+          ],
+          tutorials:[
+            {name:'XSS tutorial (video)', url:'https://www.youtube.com/watch?v=3zQ3q2Q0VnU'},
+            {name:'SQLi practical guide', url:'https://portswigger.net/web-security/sql-injection'}
+          ],
+          labs:[
+            {name:'DVWA (vulnerable web app)', url:'http://www.dvwa.co.uk/'},
+            {name:'SQLi labs (TryHackMe)', url:'https://tryhackme.com/room/sqlinjection'}
+          ]
+        }},
+        {title:'Autenticação e session faults', links:{
+          docs:[
+            {name:'Auth cheatsheet (OWASP)', url:'https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html'}
+          ],
+          tutorials:[
+            {name:'Session management attacks (video)', url:'https://www.youtube.com/results?search_query=session+management+hacking'}
+          ],
+          labs:[
+            {name:'Broken Authentication labs', url:'https://portswigger.net/web-security/authentication'}
+          ]
+        }},
+        {title:'Burp Suite workflow', links:{
+          docs:[
+            {name:'Burp Suite docs', url:'https://portswigger.net/burp/documentation'},
+          ],
+          tutorials:[
+            {name:'Burp Suite tutorial (free)', url:'https://portswigger.net/web-security'},
+            {name:'Burp essentials (YouTube)', url:'https://www.youtube.com/results?search_query=burp+suite+tutorial'}
+          ],
+          labs:[
+            {name:'PortSwigger Academy labs', url:'https://portswigger.net/web-security'}
+          ]
+        }},
+        {title:'Construir relatórios de vuln', links:{
+          docs:[
+            {name:'How to write a pentest report (guide)', url:'https://www.hackingarticles.in/how-to-write-a-penetration-testing-report/'}
+          ],
+          tutorials:[
+            {name:'Reporting & remediation (video)', url:'https://www.youtube.com/results?search_query=how+to+write+pentest+report'}
+          ],
+          labs:[
+            {name:'Example reports & templates', url:'https://github.com/OWASP/owasp-mstg'}
+          ]
+        }}
+      ]},
+      {id:'crypto', title:'Cripto & Protocolos', pct:6, stages:[
+        {title:'Hashes e integridade', links:{
+          docs:[
+            {name:'RFC 2104 (HMAC)', url:'https://datatracker.ietf.org/doc/html/rfc2104'},
+            {name:'SHA family (NIST)', url:'https://csrc.nist.gov/Projects/Hash-Functions'}
+          ],
+          tutorials:[
+            {name:'Hashes explained (video)', url:'https://www.youtube.com/watch?v=dh8G2t5J3s4'}
+          ],
+          labs:[
+            {name:'Crypto challenges (CTF)', url:'https://ctftime.org/'}
+          ]
+        }},
+        {title:'Cifras simétricas vs assimétricas', links:{
+          docs:[
+            {name:'Intro to symmetric/asymmetric', url:'https://en.wikipedia.org/wiki/Symmetric-key_algorithm'}
+          ],
+          tutorials:[
+            {name:'Cryptography tutorials (Khan/YouTube)', url:'https://www.youtube.com/results?search_query=cryptography+basics'}
+          ],
+          labs:[
+            {name:'Practical crypto CTFs', url:'https://cryptopals.com/'}
+          ]
+        }},
+        {title:'PKI e certificados', links:{
+          docs:[
+            {name:'X.509 overview', url:'https://en.wikipedia.org/wiki/X.509'}
+          ],
+          tutorials:[
+            {name:'PKI explained', url:'https://www.youtube.com/watch?v=Z4z6_iH8z6k'}
+          ],
+          labs:[
+            {name:'TLS lab & cert analysis', url:'https://tryhackme.com/room/tlstools'}
+          ]
+        }},
+        {title:'TLS internals', links:{
+          docs:[
+            {name:'TLS 1.3 RFC', url:'https://datatracker.ietf.org/doc/html/rfc8446'}
+          ],
+          tutorials:[
+            {name:'TLS handshake explained', url:'https://www.youtube.com/watch?v=SJJmoDZ3il8'}
+          ],
+          labs:[
+            {name:'TLS misconfiguration labs', url:'https://portswigger.net/web-security/ssl-tls'}
+          ]
+        }},
+        {title:'Identificar má-implementação', links:{
+          docs:[
+            {name:'Common TLS mistakes', url:'https://wiki.mozilla.org/Security/Server_Side_TLS'}
+          ],
+          tutorials:[
+            {name:'Real-world TLS failures', url:'https://www.youtube.com/results?search_query=tls+misconfiguration+examples'}
+          ],
+          labs:[
+            {name:'Hands-on: find bad TLS', url:'https://tryhackme.com/room/tlstools'}
+          ]
+        }}
+      ]},
+      {id:'exploit', title:'Exploitation & Memory', pct:8, stages:[
+        {title:'Buffer overflow básico', links:{
+          docs:[
+            {name:'Smashing The Stack for Fun and Profit (classic)', url:'https://inst.eecs.berkeley.edu/~cs161/fa17/resources/smashstack.pdf'},
+            {name:'pwn tutorial notes', url:'https://www.trap.jp/post/2016/04/19/pwn/.'}
+          ],
+          tutorials:[
+            {name:'Buffer overflow explained (video)', url:'https://www.youtube.com/results?search_query=buffer+overflow+tutorial'},
+          ],
+          labs:[
+            {name:'Protostar / pwnable.kr', url:'http://pwnable.kr/'},
+            {name:'Exploit-exercises', url:'https://exploit-exercises.com'}
+          ]
+        }},
+        {title:'Format strings', links:{
+          docs:[
+            {name:'Format string vulnerabilities (writeup)', url:'https://en.wikipedia.org/wiki/Format_string_attack'}
+          ],
+          tutorials:[
+            {name:'Format string attack tutorial', url:'https://www.youtube.com/results?search_query=format+string+exploit'}
+          ],
+          labs:[
+            {name:'Pwntools exercises', url:'https://github.com/Gallopsled/pwntools'}
+          ]
+        }},
+        {title:'ASLR/NX e mitigations', links:{
+          docs:[
+            {name:'Linux memory protection (ASLR)', url:'https://www.kernel.org/doc/html/latest/admin-guide/mm/rightness.html'}
+          ],
+          tutorials:[
+            {name:'Bypassing ASLR/NX (lectures)', url:'https://www.youtube.com/results?search_query=aslr+nx+bypass'}
+          ],
+          labs:[
+            {name:'pwnable challenges', url:'https://ctflearn.com/'}
+          ]
+        }},
+        {title:'ROP fundamentals', links:{
+          docs:[
+            {name:'Return Oriented Programming (paper)', url:'https://www.cs.tufts.edu/comp/158/notes/ROP.pdf'}
+          ],
+          tutorials:[
+            {name:'ROP tutorial (video)', url:'https://www.youtube.com/results?search_query=rop+tutorial'}
+          ],
+          labs:[
+            {name:'ROP practice (pwn)', url:'https://ropemporium.com/'}
+          ]
+        }},
+        {title:'Construir exploit simples', links:{
+          docs:[
+            {name:'Pwntools docs', url:'https://pwntools.readthedocs.io/en/stable/'}
+          ],
+          tutorials:[
+            {name:'Build exploit with pwntools (guide)', url:'https://www.youtube.com/results?search_query=pwntools+exploit+tutorial'}
+          ],
+          labs:[
+            {name:'Write & test exploits (local lab)', url:'https://vulnhub.com/'}
+          ]
+        }}
+      ]},
+      {id:'re', title:'Reverse Engineering', pct:6, stages:[
+        {title:'Introdução a Ghidra/IDA', links:{
+          docs:[
+            {name:'Ghidra official', url:'https://ghidra-sre.org/'},
+            {name:'IDA Pro (overview)', url:'https://www.hex-rays.com/products/ida/'}
+          ],
+          tutorials:[
+            {name:'Ghidra beginner series (YT)', url:'https://www.youtube.com/results?search_query=ghidra+tutorial+beginner'},
+            {name:'Reverse engineering basics (course)', url:'https://www.opensecuritytraining.info/'}
+          ],
+          labs:[
+            {name:'Crackmes and challenges', url:'https://crackmes.one/'}
+          ]
+        }},
+        {title:'Análise estática vs dinâmica', links:{
+          docs:[
+            {name:'Static vs dynamic analysis (guide)', url:'https://www.malwaretech.com/'}
+          ],
+          tutorials:[
+            {name:'Dynamic analysis walkthrough', url:'https://www.youtube.com/results?search_query=dynamic+reverse+engineering+tutorial'}
+          ],
+          labs:[
+            {name:'Practical RE labs', url:'https://tryhackme.com/room/reverseengineering'}
+          ]
+        }},
+        {title:'Strings, imports, fluxo', links:{
+          docs:[
+            {name:'Binary analysis notes', url:'https://radare.org/'}
+          ],
+          tutorials:[
+            {name:'Reading assembly (video series)', url:'https://www.youtube.com/results?search_query=assembly+tutorial+for+reverse+engineering'}
+          ],
+          labs:[
+            {name:'Ghidra practice', url:'https://ghidra.re/ghidra_docs/'}
+          ]
+        }},
+        {title:'Unpacking e obfuscation', links:{
+          docs:[
+            {name:'Packing/unpacking overview', url:'https://www.virusbulletin.com/'}
+          ],
+          tutorials:[
+            {name:'Unpacking malware (tutorial)', url:'https://www.youtube.com/results?search_query=unpacking+malware+tutorial'}
+          ],
+          labs:[
+            {name:'Malware analysis labs', url:'https://www.malwareunicorn.org/'}
+          ]
+        }},
+        {title:'Analisar binários simples', links:{
+          docs:[
+            {name:'ELF and PE format guides', url:'https://en.wikipedia.org/wiki/Executable_and_Linkable_Format'}
+          ],
+          tutorials:[
+            {name:'Beginner x86/x64 RE', url:'https://www.youtube.com/results?search_query=x86+reverse+engineering+beginner'}
+          ],
+          labs:[
+            {name:'Reverse Engineering challenges', url:'https://www.reversing.kr/'}
+          ]
+        }}
+      ]},
+      {id:'pentest', title:'Pentest Metodologia', pct:5, stages:[
+        {title:'Reconhecimento e OSINT', links:{
+          docs:[
+            {name:'OSINT Framework', url:'https://osintframework.com/'}
+          ],
+          tutorials:[
+            {name:'OSINT tutorial (video)', url:'https://www.youtube.com/results?search_query=osint+tutorial'}
+          ],
+          labs:[
+            {name:'OSINT labs & exercises', url:'https://tryhackme.com/room/osint'},
+          ]
+        }},
+        {title:'Enumeração (ports/services)', links:{
+          docs:[
+            {name:'Nmap manual', url:'https://nmap.org/book/man.html'}
+          ],
+          tutorials:[
+            {name:'Nmap tutorials', url:'https://nmap.org/book/tutorial.html'}
+          ],
+          labs:[
+            {name:'Practical enumeration (labs)', url:'https://tryhackme.com/room/enumeration'}
+          ]
+        }},
+        {title:'Explotação controlada', links:{
+          docs:[
+            {name:'Pentest methodology (PTES)', url:'http://www.pentest-standard.org/'}
+          ],
+          tutorials:[
+            {name:'Pentest full cycle (videos)', url:'https://www.youtube.com/results?search_query=penetration+testing+methodology'}
+          ],
+          labs:[
+            {name:'HackTheBox paths', url:'https://www.hackthebox.com/'}
+          ]
+        }},
+        {title:'Pós-exploração e persistência', links:{
+          docs:[
+            {name:'MITRE ATT&CK Framework', url:'https://attack.mitre.org/'}
+          ],
+          tutorials:[
+            {name:'Post-exploitation techniques', url:'https://www.youtube.com/results?search_query=post+exploitation+techniques'}
+          ],
+          labs:[
+            {name:'Red Team labs', url:'https://tryhackme.com/room/redteamops'}
+          ]
+        }},
+        {title:'Report técnico & executivo', links:{
+          docs:[
+            {name:'Reporting templates & examples', url:'https://github.com/apsdehal/awesome-ctf#writeups'}
+          ],
+          tutorials:[
+            {name:'How to write pentest reports', url:'https://www.youtube.com/results?search_query=how+to+write+penetration+testing+report'}
+          ],
+          labs:[
+            {name:'Report exercises', url:'https://www.offensive-security.com/'}
+          ]
+        }}
+      ]},
+      {id:'opsec', title:'OpSec & Social Eng', pct:4, stages:[
+        {title:'Princípios de OpSec', links:{
+          docs:[
+            {name:'Operational Security guidance', url:'https://en.wikipedia.org/wiki/Operational_security'}
+          ],
+          tutorials:[
+            {name:'OpSec basics (video)', url:'https://www.youtube.com/results?search_query=opsec+basics'}
+          ],
+          labs:[
+            {name:'Practical OpSec scenarios', url:'https://tryhackme.com/room/opsec'}
+          ]
+        }},
+        {title:'Phishing e engenharia social', links:{
+          docs:[
+            {name:'Social engineering primer', url:'https://www.social-engineer.org/'}
+          ],
+          tutorials:[
+            {name:'Social engineering techniques (video)', url:'https://www.youtube.com/results?search_query=social+engineering+tutorial'}
+          ],
+          labs:[
+            {name:'Phishing labs', url:'https://tryhackme.com/room/phishing'}
+          ]
+        }},
+        {title:'Técnicas de persistência', links:{
+          docs:[
+            {name:'Persistence techniques (MITRE)', url:'https://attack.mitre.org/tactics/TA0003/'}
+          ],
+          tutorials:[
+            {name:'Maintaining access (lectures)', url:'https://www.youtube.com/results?search_query=maintain+access+post+exploitation'}
+          ],
+          labs:[
+            {name:'Persistence labs', url:'https://tryhackme.com/room/persistence'}
+          ]
+        }},
+        {title:'Lateral movement basics', links:{
+          docs:[
+            {name:'Lateral Movement techniques (MITRE)', url:'https://attack.mitre.org/techniques/T1570/'}
+          ],
+          tutorials:[
+            {name:'Lateral movement demo', url:'https://www.youtube.com/results?search_query=lateral+movement+demo'}
+          ],
+          labs:[
+            {name:'Lateral movement labs', url:'https://tryhackme.com/room/lateralmovement'}
+          ]
+        }},
+        {title:'Mitigações e defesas', links:{
+          docs:[
+            {name:'Defensive measures (NIST)', url:'https://www.nist.gov/'}
+          ],
+          tutorials:[
+            {name:'Defense strategies (video)', url:'https://www.youtube.com/results?search_query=cyber+defense+strategies'}
+          ],
+          labs:[
+            {name:'Blue team labs', url:'https://tryhackme.com/paths/defensive'}
+          ]
+        }}
+      ]},
+      {id:'cloud', title:'Cloud & Infra', pct:1, stages:[
+        {title:'Conceitos AWS/GCP/Azure', links:{
+          docs:[
+            {name:'AWS docs (fundamentals)', url:'https://docs.aws.amazon.com/'},
+            {name:'GCP docs', url:'https://cloud.google.com/docs'},
+            {name:'Azure docs', url:'https://learn.microsoft.com/azure/'}
+          ],
+          tutorials:[
+            {name:'Cloud fundamentals (free course)', url:'https://www.freecodecamp.org/news/cloud-computing-for-beginners/'}
+          ],
+          labs:[
+            {name:'Cloud security labs (TryHackMe)', url:'https://tryhackme.com/room/cloudfundamentals'}
+          ]
+        }},
+        {title:'IAM e permissões', links:{
+          docs:[
+            {name:'AWS IAM docs', url:'https://docs.aws.amazon.com/IAM/latest/UserGuide/'}
+          ],
+          tutorials:[
+            {name:'IAM best practices', url:'https://aws.amazon.com/iam/'}
+          ],
+          labs:[
+            {name:'IAM misconfig labs', url:'https://tryhackme.com/room/cloudmisconfigurations'}
+          ]
+        }},
+        {title:'S3 buckets e política', links:{
+          docs:[
+            {name:'AWS S3 docs', url:'https://docs.aws.amazon.com/s3/index.html'}
+          ],
+          tutorials:[
+            {name:'S3 misconfigurations (guide)', url:'https://www.youtube.com/results?search_query=s3+bucket+misconfiguration+security'}
+          ],
+          labs:[
+            {name:'S3 labs (TryHackMe)', url:'https://tryhackme.com/room/s3security'}
+          ]
+        }},
+        {title:'Containers e Kubernetes basics', links:{
+          docs:[
+            {name:'Kubernetes docs', url:'https://kubernetes.io/docs/home/'}
+          ],
+          tutorials:[
+            {name:'Kubernetes basics (free course)', url:'https://www.youtube.com/results?search_query=kubernetes+basics'}
+          ],
+          labs:[
+            {name:'Kubernetes labs', url:'https://kubernetesbyexample.com/'}
+          ]
+        }},
+        {title:'Identificar má-configurações', links:{
+          docs:[
+            {name:'Cloud security best practices', url:'https://cloudsecurityalliance.org/'}
+          ],
+          tutorials:[
+            {name:'Cloud pentest tutorials', url:'https://www.youtube.com/results?search_query=cloud+pentest+tutorial'}
+          ],
+          labs:[
+            {name:'Cloud vulnerability labs', url:'https://tryhackme.com/room/cloudsecurity'}
+          ]
+        }}
+      ]}
+    ];
+
+    // ----------------- CONFIGURAÇÕES DE STORAGE -----------------
+const STORAGE_KEY = 'void29_roadmap_v1';
+
+// ==================== STATE ====================
+function defaultState(){
+  const sections = ROADMAP.map((s,i)=>({
+    id: s.id,
+    progressByStage: s.stages.map(()=>false),
+    unlocked: i===0
+  }));
+  return {
+    sections,
+    daily:{phys:false,study1:false,study2:false,labs:false,notes:false},
+    notes:'',
+    lastSaved: null,
+    currentSectionId: ROADMAP[0]?.id || null
+  };
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){ console.error(e); }
+  return defaultState();
+}
+
+let state = loadState();
+let currentSectionId = state.currentSectionId || ROADMAP[0]?.id;
+
+// ==================== PERSIST ====================
+function persist(){
+  state.lastSaved = new Date().toISOString();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function saveState(){ 
+  persist(); 
+  toast('Progresso guardado'); 
+  renderAll(); 
+}
+
+// ==================== MENU ====================
+function renderMenu(){
+  const menu = document.getElementById('menu');
+  if(!menu) return;
+  menu.innerHTML='';
+
+  ROADMAP.forEach((s, idx)=>{
+    const sec = state.sections.find(x=>x.id===s.id);
+    if(!sec) return;
+    const done = sec.progressByStage.filter(x=>x).length;
+    const total = sec.progressByStage.length;
+    const percent = Math.round((done/total)*100);
+
+    const div = document.createElement('div');
+    div.className = 'menu-item ' + (sec.unlocked?'':'locked') + (currentSectionId===s.id?' selected':'');
+    div.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="num">${idx+1}</div>
+        <div>
+          <h4 style="margin:0">${s.title}</h4>
+          <p>${percent}% • ${done}/${total} etapas</p>
+        </div>
+      </div>
+    `;
+    div.addEventListener('click',()=>{
+      if(!sec.unlocked){ toast('Completa a seção anterior primeiro'); return; }
+      currentSectionId = s.id;
+      state.currentSectionId = s.id;
+      renderAll();
+    });
+    menu.appendChild(div);
+  });
+}
+
+// ==================== SEÇÃO ====================
+function showSection(id){
+  const section = ROADMAP.find(s=>s.id===id);
+  const secState = state.sections.find(x=>x.id===id);
+  if(!section || !secState) return;
+
+  document.getElementById('mainTitle').innerText = section.title;
+  document.getElementById('mainMeta').innerText = `Peso: ${section.pct || 0}% — ${secState.progressByStage.filter(x=>x).length}/${section.stages.length} etapas concluídas`;
+
+  const area = document.getElementById('stepsArea');
+  area.innerHTML='';
+
+  section.stages.forEach((stObj, idx)=>{
+    const done = secState.progressByStage[idx];
+    const prevDone = idx===0 || secState.progressByStage[idx-1];
+
+    const stageDiv = document.createElement('div');
+    stageDiv.className='stage ' + (done?'done':(!prevDone?'locked':''));
+    stageDiv.innerHTML = `<h4>${idx+1}. ${stObj.title}</h4>`;
+
+    if(stObj.links){
+      ['docs','tutorials','labs'].forEach(cat=>{
+        if(stObj.links[cat]?.length){
+          const group = document.createElement('div');
+          group.className='link-group';
+          stObj.links[cat].forEach(l=>{
+            const a = document.createElement('a');
+            a.href = l.url;
+            a.target='_blank';
+            a.innerText = (cat==='docs'?'📚':cat==='tutorials'?'🎓':'🧪')+' '+l.name;
+            a.className='link-btn';
+            group.appendChild(a);
+          });
+          stageDiv.appendChild(group);
+        }
+      });
+    }
+
+    const btn = document.createElement('button');
+    btn.className='btn';
+    btn.disabled = !prevDone || done;
+    btn.innerText = done?'Concluído':(prevDone?'Marcar concluído':'Bloqueado');
+    btn.addEventListener('click', ()=>{
+      secState.progressByStage[idx] = true;
+      if(secState.progressByStage.every(x=>x)){
+        const idxSection = ROADMAP.findIndex(s=>s.id===id);
+        const nextSec = state.sections.find(x=>x.id===ROADMAP[idxSection+1]?.id);
+        if(nextSec) nextSec.unlocked = true;
+      }
+      persist();
+      renderAll();
+    });
+    stageDiv.appendChild(btn);
+    area.appendChild(stageDiv);
+  });
+}
+
+// ==================== GLOBAL PROGRESS ====================
+function renderGlobalProgress(){
+  const totalWeight = ROADMAP.reduce((acc,s)=>acc + (s.pct||0),0) || 1;
+  let doneWeight = 0;
+
+  ROADMAP.forEach(s=>{
+    const sec = state.sections.find(x=>x.id===s.id);
+    if(!sec) return;
+    const pctSec = sec.progressByStage.filter(x=>x).length / sec.progressByStage.length;
+    doneWeight += pctSec * (s.pct || 0);
+  });
+
+  const percent = Math.round((doneWeight/totalWeight)*100);
+
+  // Atualiza os elementos que já existem no HTML
+  const overallPercent = document.getElementById('overallPercent');
+  const overallFill = document.getElementById('overallFill');
+
+  if(overallPercent) overallPercent.innerText = percent + '%';
+  if(overallFill) overallFill.style.width = percent + '%';
+}
+
+// ==================== TOAST ====================
+function toast(msg){
+  const t = document.createElement('div');
+  t.className='toast';
+  t.innerText=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2000);
+}
+
+// ==================== BOTÕES ====================
+document.getElementById('saveBtn')?.addEventListener('click', saveState);
+document.getElementById('resetBtn')?.addEventListener('click', ()=>{
+  if(!confirm('Resetar TODO o progresso?')) return;
+  state = defaultState();
+  persist();
+  renderAll();
+  toast('Progresso resetado');
+});
+document.getElementById('saveNote')?.addEventListener('click', ()=>{
+  state.notes = document.getElementById('noteBox').value;
+  persist();
+  toast('Nota guardada');
+});
+document.getElementById('clearNote')?.addEventListener('click', ()=>{
+  if(!confirm('Tens certeza que queres limpar as notas?')) return;
+  document.getElementById('noteBox').value = '';
+  state.notes = '';
+  persist();
+  toast('Nota limpa');
+});
+
+// ==================== RENDER ALL ====================
+function renderAll(){
+  renderMenu();
+  showSection(currentSectionId);
+  renderGlobalProgress();
+  const noteBox = document.getElementById('noteBox');
+  if(noteBox) noteBox.value = state.notes || '';
+}
+
+renderAll();
+</script>
